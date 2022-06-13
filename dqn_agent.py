@@ -32,7 +32,7 @@ class Agent():
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random.seed(seed)
-
+        
         # Q-Network
         self.qnetwork_local = QNetwork(state_size, action_size, seed).to(device)
         self.qnetwork_target = QNetwork(state_size, action_size, seed).to(device)
@@ -63,7 +63,8 @@ class Agent():
             state (array_like): current state
             eps (float): epsilon, for epsilon-greedy action selection
         """
-        state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        state = torch.from_numpy(state).float().unsqueeze(0).squeeze(2).to(device)
+        # state = self.image_transform(state.unsqueeze(0).squeeze(2).float().to(device))
         self.qnetwork_local.eval()
         with torch.no_grad():
             action_values = self.qnetwork_local(state)
@@ -88,15 +89,16 @@ class Agent():
         ## TODO: compute and minimize the loss
         
         # TD_target (R + gamma * max_a(Q(next_state, actions , w`))) 
-        Q_target_next = self.qnetwork_target(next_states).detach().max(1)[0].unsqueeze(1)
-        
+        Q_target_next = self.qnetwork_target(next_states).detach().max(1)[0]
         Q_target = rewards + gamma * (Q_target_next * (1- dones))
         
-        # Old value Q(state, action, w)
-        Q_local = self.qnetwork_local(states).gather(1, actions)
+        Q_target = np.moveaxis(np.vstack([Q_target, Q_target, Q_target, Q_target, Q_target]),0,1)
+        Q_target = torch.from_numpy(Q_target).float().to(device)
         
+        # Old value Q(state, action, w)
+        Q_local = self.qnetwork_local(states)
         #loss
-        loss = F.mse_loss(Q_target, Q_local)
+        loss = F.mse_loss(Q_target, Q_local, reduction='sum')
                                              
         # update weights in local_network (optimizer object is linked to local_network parameters, see initialisations above)
         self.optimizer.zero_grad()
@@ -149,12 +151,11 @@ class ReplayBuffer:
     def sample(self):
         """Randomly sample a batch of experiences from memory."""
         experiences = random.sample(self.memory, k=self.batch_size)
-
-        states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
-        actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).long().to(device)
-        rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(device)
-        next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
-        dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
+        states = torch.from_numpy(np.array([e.state for e in experiences if e is not None])).float().squeeze(2).to(device)
+        actions = torch.from_numpy(np.array([e.action for e in experiences if e is not None])).long().to(device)
+        rewards = torch.from_numpy(np.array([e.reward for e in experiences if e is not None])).float().to(device)
+        next_states = torch.from_numpy(np.array([e.next_state for e in experiences if e is not None])).float().squeeze(2).to(device)
+        dones = torch.from_numpy(np.array([e.done for e in experiences if e is not None])).float().to(device)
   
         return (states, actions, rewards, next_states, dones)
 

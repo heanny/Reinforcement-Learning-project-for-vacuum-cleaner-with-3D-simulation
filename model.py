@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+ 
 class QNetwork(nn.Module):
     """Actor (Policy) Model."""
-
-    def __init__(self, state_size, action_size, seed, hidden_units = [32,32]):
+ 
+    def __init__(self, state_size, action_size, seed, hidden_units = [512, 256, 128]):
         """Initialize parameters and build model.
         Params
         ======
@@ -15,15 +15,50 @@ class QNetwork(nn.Module):
         """
         super(QNetwork, self).__init__()
         self.seed = torch.manual_seed(seed)
-        self.fc1 = nn.Linear(state_size, hidden_units[0])
-        self.fc2 = nn.Linear(hidden_units[0], hidden_units[1])
-        self.fc3 = nn.Linear(hidden_units[1], action_size)
-        
+        self.conv = nn.Sequential(
+            nn.Conv2d(3, 32, 5),  # 32@84*84*3
+            nn.BatchNorm2d(32, momentum=1,affine=True),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2),  # 32@40*40*3
+ 
+            nn.Conv2d(32, 64, 5), # 64@37*37*3
+            nn.BatchNorm2d(64, momentum=1,affine=True),
+            nn.ReLU(inplace=True),    
+            nn.MaxPool2d(2),   # 64@18*18*3
+           
+            nn.Conv2d(64, 64, 5), # 64@15*15*3
+            nn.BatchNorm2d(64, momentum=1,affine=True),
+            nn.ReLU(inplace=True),    
+            nn.MaxPool2d(2),   # 64@7*7*3
+           
+            nn.Conv2d(64, 128, 5), # 128@4*4*3
+            nn.BatchNorm2d(128, momentum=1,affine=True),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.2),
+        )
+        self.seq = nn.Sequential(
+            nn.Linear(1152, 1048),
+            nn.ReLU(inplace=True),
+           
+            nn.Linear(1048, hidden_units[0]),
+            nn.ReLU(inplace=True),
+           
+            nn.Linear(hidden_units[0], hidden_units[0]),
+            nn.ReLU(inplace=True),
+           
+            nn.Linear(hidden_units[0], hidden_units[1]),
+            nn.ReLU(inplace=True),
+           
+            nn.Linear(hidden_units[1], hidden_units[2]),
+            nn.ReLU(inplace=True),
+        )
+        self.out = nn.Linear(hidden_units[2], action_size)
+       
     def forward(self, state):
         """Build a network that maps state -> action values."""
-        
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        
-        return self.fc3(x)
-        
+        x = self.conv(state)
+        x = x.view(x.size()[0], -1)
+        h = self.seq(x)
+        out = self.out(h)
+       
+        return out
