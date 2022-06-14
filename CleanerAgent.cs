@@ -32,7 +32,7 @@ public class CleanerAgent : Agent
     public override void OnEpisodeBegin()
     {
        // If the Agent fell, zero its momentum
-        if (trashNum < 25)
+        if (trashNum < 38)
         {
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
@@ -61,27 +61,31 @@ public class CleanerAgent : Agent
         switch (action)
         {
             case 1:
-                dirToGo = transform.forward * 2.5f;
+                // dirToGo = transform.forward * 1.5f;
+                dirToGo = transform.forward * 1.5f;
                 break;
             case 2:
-                dirToGo = transform.forward * -2.5f;
+                // dirToGo = transform.forward * -1.5f;
+                dirToGo = transform.forward * -1.5f;
                 break;
             case 3:
-                rotateDir = transform.up * 1f;
-                // rotateDir = new Vector3(0, 30, 0);
+                // rotateDir = this.rBody.transform.up * 1f;
+                rotateDir = this.rBody.transform.up * 1f;
                 break;
             case 4:
-                rotateDir = transform.up * -1f;
+                // rotateDir = this.rBody.transform.up * -1f;
+                rotateDir = this.rBody.transform.up * -1f;
                 break;
         }
         transform.Rotate(rotateDir);
         rBody.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
+        rBody.AddTorque(rotateDir, ForceMode.VelocityChange);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         MoveAgent(actionBuffers.DiscreteActions);
-        if (trashNum == 25 || this.transform.localPosition.y < -2.5f || battery == 0)
+        if (trashNum == 38 || this.transform.localPosition.y < -2.5f || battery == 0)
         {
             t.Enabled = false;
             EndEpisode();
@@ -122,10 +126,16 @@ public class CleanerAgent : Agent
             trashNum += 1;
             collisionInfo.gameObject.transform.localPosition = new Vector3(0, 100.0f, 0);
         }
+        if (collisionInfo.collider.tag == "DoorTrash")
+        {
+            SetReward(15.0f);
+            trashNum += 1;
+            collisionInfo.gameObject.transform.localPosition = new Vector3(0, 100.0f, 0);
+        }
         if (collisionInfo.collider.tag == "Charge")
         {
             if (battery < 10){
-                SetReward(10.0f);
+                SetReward(100.0f);
             }
             battery = 100;
         }
@@ -144,7 +154,7 @@ public class CleanerAgent : Agent
      void Update()
      {
         txt.text = "Battery: " + battery.ToString() + "%";
-        if (trashNum == 25 || this.transform.localPosition.y < -2.5f || battery == 0)
+        if (trashNum == 38 || this.transform.localPosition.y < -2.5f || battery == 0)
         {
             t.Enabled = false;
             EndEpisode();
