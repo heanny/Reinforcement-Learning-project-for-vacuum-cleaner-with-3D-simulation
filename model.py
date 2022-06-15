@@ -30,14 +30,20 @@ class QNetwork(nn.Module):
             nn.BatchNorm2d(64, momentum=1,affine=True),
             nn.ReLU(inplace=True),    
             nn.MaxPool2d(2),   # 64@7*7*3
-           
-            nn.Conv2d(64, 128, 5), # 128@4*4*3
+            
+            nn.Conv2d(64, 128, 5), # 128@10*10*3
             nn.BatchNorm2d(128, momentum=1,affine=True),
             nn.ReLU(inplace=True),
             nn.Dropout(0.2),
         )
         self.seq = nn.Sequential(
-            nn.Linear(1152, 1048),
+            nn.Linear(8192, 4096),
+            nn.ReLU(inplace=True),
+            
+            nn.Linear(4096, 2048),
+            nn.ReLU(inplace=True),
+            
+            nn.Linear(2048, 1048),
             nn.ReLU(inplace=True),
            
             nn.Linear(1048, hidden_units[0]),
@@ -56,6 +62,7 @@ class QNetwork(nn.Module):
        
     def forward(self, state):
         """Build a network that maps state -> action values."""
+#         print("~~~~~~~~~~~~~~~~~~~~~")
         x = self.conv(state)
         x = x.view(x.size()[0], -1)
         h = self.seq(x)

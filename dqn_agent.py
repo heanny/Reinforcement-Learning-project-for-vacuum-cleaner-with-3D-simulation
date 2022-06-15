@@ -15,7 +15,7 @@ TAU = 1e-3              # for soft update of target parameters
 LR = 5e-4               # learning rate 
 UPDATE_EVERY = 4        # how often to update the network 这个是用来fix target network的？
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 
 class Agent():
     """Interacts with and learns from the environment."""
@@ -55,7 +55,7 @@ class Agent():
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
 
-    def act(self, state, eps=0.):
+    def act(self, state, eps=0.3):
         """Returns actions for given state as per current policy.
         
         Params
@@ -64,6 +64,7 @@ class Agent():
             eps (float): epsilon, for epsilon-greedy action selection
         """
         state = torch.from_numpy(state).float().unsqueeze(0).squeeze(2).to(device)
+#         print(state)
         # state = self.image_transform(state.unsqueeze(0).squeeze(2).float().to(device))
         self.qnetwork_local.eval()
         with torch.no_grad():
@@ -73,7 +74,9 @@ class Agent():
         # Epsilon-greedy action selection
         if random.random() > eps:
             return np.argmax(action_values.cpu().data.numpy())
+            print(eps)
         else:
+            print(eps)
             return random.choice(np.arange(self.action_size))
 
     def learn(self, experiences, gamma):
@@ -94,16 +97,21 @@ class Agent():
         
         Q_target = np.moveaxis(np.vstack([Q_target, Q_target, Q_target, Q_target, Q_target]),0,1)
         Q_target = torch.from_numpy(Q_target).float().to(device)
+        # print(Q_target.shape)
+        # print(Q_target)
         
         # Old value Q(state, action, w)
         Q_local = self.qnetwork_local(states)
+        # print(Q_local)
+#         Q_local = torch.from_numpy(Q_local).float().to(device)
+#         print(Q_local.shape)
+#         print(Q_local)
+#         Q_new = Q_local.gather(1, actions)
+#         print(Q_new.shape)
+#         print(Q_new)
+        
         #loss
         loss = F.mse_loss(Q_target, Q_local, reduction='sum')
-                                             
-        # update weights in local_network (optimizer object is linked to local_network parameters, see initialisations above)
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
         
 
         
@@ -156,6 +164,8 @@ class ReplayBuffer:
         rewards = torch.from_numpy(np.array([e.reward for e in experiences if e is not None])).float().to(device)
         next_states = torch.from_numpy(np.array([e.next_state for e in experiences if e is not None])).float().squeeze(2).to(device)
         dones = torch.from_numpy(np.array([e.done for e in experiences if e is not None])).float().to(device)
+        # print(states.shape, actions.shape, rewards.shape, next_states.shape, dones.shape)
+        # print(dones)
   
         return (states, actions, rewards, next_states, dones)
 
