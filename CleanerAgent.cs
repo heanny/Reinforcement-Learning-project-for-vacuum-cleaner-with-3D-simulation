@@ -21,13 +21,13 @@ public class CleanerAgent : Agent
         trashNum = 0;
         battery = 100;
         txt.text = "Battery: " + battery.ToString() + "%";
-        t = new System.Timers.Timer(5000);
+        t = new System.Timers.Timer(50000);
         t.Elapsed += new System.Timers.ElapsedEventHandler(battery_decrese);
         t.AutoReset = true;
         t.Enabled = true;
     }
 
-    
+
     // define start and end condition
     public override void OnEpisodeBegin()
     {
@@ -44,11 +44,11 @@ public class CleanerAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         // Target and Agent positions
-        sensor.AddObservation(this.transform.localPosition);
+        // sensor.AddObservation(this.transform.localPosition);
 
         // Agent velocity
-        sensor.AddObservation(rBody.velocity.x);
-        sensor.AddObservation(rBody.velocity.z);
+        // sensor.AddObservation(rBody.velocity.x);
+        // sensor.AddObservation(rBody.velocity.z);
         sensor.AddObservation(battery);
     }
 
@@ -58,28 +58,27 @@ public class CleanerAgent : Agent
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
         var action = act[0];
+
         switch (action)
         {
             case 1:
-                // dirToGo = transform.forward * 1.5f;
-                dirToGo = transform.forward * 1.5f;
+                dirToGo = transform.forward * 1f;
                 break;
             case 2:
-                // dirToGo = transform.forward * -1.5f;
-                dirToGo = transform.forward * -1.5f;
+                dirToGo = transform.forward * -1f;
                 break;
             case 3:
-                // rotateDir = this.rBody.transform.up * 1f;
-                rotateDir = this.rBody.transform.up * 1f;
+                rotateDir = transform.up * 1f;
+
                 break;
             case 4:
-                // rotateDir = this.rBody.transform.up * -1f;
-                rotateDir = this.rBody.transform.up * -1f;
+                rotateDir = transform.up * -1f;
+
                 break;
         }
-        transform.Rotate(rotateDir);
-        rBody.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
+        //transform.Rotate(rotateDir, Space.Self)
         rBody.AddTorque(rotateDir, ForceMode.VelocityChange);
+        rBody.AddForce(dirToGo, ForceMode.VelocityChange);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -134,8 +133,8 @@ public class CleanerAgent : Agent
         }
         if (collisionInfo.collider.tag == "Charge")
         {
-            if (battery < 10){
-                SetReward(100.0f);
+            if (battery <= 30){
+                SetReward(20.0f);
             }
             battery = 100;
         }
@@ -153,11 +152,12 @@ public class CleanerAgent : Agent
 
      void Update()
      {
+        
         txt.text = "Battery: " + battery.ToString() + "%";
         if (trashNum == 38 || this.transform.localPosition.y < -2.5f || battery == 0)
         {
             t.Enabled = false;
             EndEpisode();
         }
-     }
+    }
 }
