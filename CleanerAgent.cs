@@ -84,10 +84,15 @@ public class CleanerAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         MoveAgent(actionBuffers.DiscreteActions);
-        if (trashNum == 38 || this.transform.localPosition.y < -2.5f || battery == 0)
+        if (trashNum == 38 || this.transform.localPosition.y < -2.5f)
         {
             t.Enabled = false;
             EndEpisode();
+        }
+        if (battery == 0)
+        {
+            battery == 100;
+            SetReward(-10f);
         }
     }
 
@@ -144,9 +149,10 @@ public class CleanerAgent : Agent
     public void battery_decrese(object source, System.Timers.ElapsedEventArgs e)   
      {   
         battery -= 1;
-        if (battery == 0){
-            t.Enabled = false;
-            EndEpisode();
+        if (battery == 0)
+        {
+            battery == 100;
+            SetReward(-10f);
         }
      }
 
@@ -154,10 +160,15 @@ public class CleanerAgent : Agent
      {
         
         txt.text = "Battery: " + battery.ToString() + "%";
-        if (trashNum == 38 || this.transform.localPosition.y < -2.5f || battery == 0)
+        if (trashNum == 38 || this.transform.localPosition.y < -2.5f)
         {
             t.Enabled = false;
             EndEpisode();
+        }
+        if (battery == 0)
+        {
+            battery == 100;
+            SetReward(-10f);
         }
     }
 }
