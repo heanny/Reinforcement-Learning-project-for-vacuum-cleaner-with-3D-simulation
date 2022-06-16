@@ -91,7 +91,7 @@ public class CleanerAgent : Agent
         }
         if (battery == 0)
         {
-            battery == 100;
+            battery = 100;
             SetReward(-10f);
         }
     }
@@ -151,7 +151,7 @@ public class CleanerAgent : Agent
         battery -= 1;
         if (battery == 0)
         {
-            battery == 100;
+            battery = 100;
             SetReward(-10f);
         }
      }
@@ -167,7 +167,7 @@ public class CleanerAgent : Agent
         }
         if (battery == 0)
         {
-            battery == 100;
+            battery = 100;
             SetReward(-10f);
         }
     }
