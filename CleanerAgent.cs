@@ -126,20 +126,14 @@ public class CleanerAgent : Agent
         }
         if (collisionInfo.collider.tag == "Trash")
         {
-            SetReward(10.0f);
-            trashNum += 1;
-            collisionInfo.gameObject.transform.localPosition = new Vector3(0, 100.0f, 0);
-        }
-        if (collisionInfo.collider.tag == "DoorTrash")
-        {
-            SetReward(15.0f);
+            SetReward(1.0f);
             trashNum += 1;
             collisionInfo.gameObject.transform.localPosition = new Vector3(0, 100.0f, 0);
         }
         if (collisionInfo.collider.tag == "Charge")
         {
             if (battery <= 30){
-                SetReward(20.0f);
+                SetReward(2.0f);
             }
             battery = 100;
         }
@@ -152,7 +146,7 @@ public class CleanerAgent : Agent
         if (battery == 0)
         {
             battery = 100;
-            SetReward(-10f);
+            SetReward(-2f);
         }
      }
 
