@@ -6,7 +6,7 @@ Windows
 https://drive.google.com/file/d/1Vvm10ijnrbAysdLdoKF7Gqs5zD3FysCG/view?usp=sharing
 
 MACOS 
-https://drive.google.com/drive/folders/1qi-tjlx_nDeExJ_lvYJgKuMdX4Au1x52?usp=sharing
+https://drive.google.com/file/d/1HGlqa6YWB3vmRz4GXi1Z3j0snhw9GeIm/view?usp=sharing
 
 
 ## final version of unity model (camera + ray sensor)
