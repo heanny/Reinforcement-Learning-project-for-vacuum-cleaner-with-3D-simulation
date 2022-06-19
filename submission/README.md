@@ -1,3 +1,6 @@
+# todo: add MAC+Windows environments. 记得删
+# todo: put in the checkpoint files. 记得删
+
 # README 
 Dear reader,
 
