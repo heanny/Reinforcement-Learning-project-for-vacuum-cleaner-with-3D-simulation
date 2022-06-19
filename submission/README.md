@@ -2,6 +2,7 @@
 # todo: put in the checkpoint files. 记得删
 # todo: 修改一个合适的episodes值，现在是10. 记得删
 # todo: 看看置信区间的颜色要不要改。 记得删
+# todo: requirement的包需要整理。 记得删
 
 # README 
 Dear reader,
