@@ -48,12 +48,12 @@
   "PER+Noisy":
     {"BATCH_SIZE": 64,
 	"GAMMA": 0.99,
-	"TAU": 1e-3,
+	"TAU": 0.1,
 	"LR": 5e-4,
 	"UPDATE_EVERY": 4,
 	"CAPACITY_PER": 100000,
 	"BETA": 0.2,
-	"PROB_ALPHA": 0.6},
+	"PROB_ALPHA": 0.8},
   "Dueling+PER":
     {"BATCH_SIZE": 64,
 	"GAMMA": 0.99,
