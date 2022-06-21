@@ -34,7 +34,7 @@
   "Dueling":
     {"BUFFER_SIZE": 100000,
 	"BATCH_SIZE": 64,
-	"GAMMA": 0.99,
+	"GAMMA": 0.9,
 	"TAU": 1e-3,
 	"LR": 5e-4,
 	"UPDATE_EVERY": 4},
