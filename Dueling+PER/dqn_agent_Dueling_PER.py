@@ -17,7 +17,8 @@ UPDATE_EVERY = 4        # how often to update the network
 CAPACITY_PER = 100000   # Priortised experience replay buffer capacity
 BETA = 0.2              # Priortised experience replay importance sample beta
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class Agent():
     """Interacts with and learns from the environment."""
