@@ -1,5 +1,5 @@
 # DIC_A3
-The DIC assignment 3 for group 6!! We are the best!!
+The DIC assignment 3 for group 6!! **We are the best!! :)** This is an reinforcement learning project for vacuum cleaner with 3D simulation. Here is our demo: https://youtu.be/etVIk2LVWXc
 
 ## original version of unity model (only camera)
 Windows 
